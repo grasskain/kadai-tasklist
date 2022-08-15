@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use App\Task; 
+
 class TasksController extends Controller
 {
     /**
@@ -13,7 +15,11 @@ class TasksController extends Controller
      */
     public function index()
     {
-        //
+        $tasks = Task::all();
+        
+        return view('tasks.index', [
+            'tasks' => $tasks,
+        ]);
     }
 
     /**
@@ -23,7 +29,12 @@ class TasksController extends Controller
      */
     public function create()
     {
-        //
+        $task = new Task;
+
+        return view('tasks.create', [
+            'task' => $task,
+        ]);
+
     }
 
     /**
@@ -34,7 +45,13 @@ class TasksController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
+        $task = new Task;
+        $task ->content = $request->content;
+        $task ->save();
+
+        return redirect('/');
+
     }
 
     /**
@@ -45,7 +62,12 @@ class TasksController extends Controller
      */
     public function show($id)
     {
-        //
+
+        $message = Task::findOrFail($id);
+
+        return view('task.show', [
+            'task' => $task,
+        ]);
     }
 
     /**
@@ -56,7 +78,13 @@ class TasksController extends Controller
      */
     public function edit($id)
     {
-        //
+         // idの値でタスクを検索して取得
+        $task = Task::findOrFail($id);
+
+        // タスク編集ビューでそれを表示
+        return view('task.edit', [
+            'task' => $task,
+        ]);
     }
 
     /**
@@ -68,7 +96,14 @@ class TasksController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+         // idの値でタスクを検索して取得
+        $task = Task::findOrFail($id);
+        // タスクを更新
+        $task ->content = $request->content;
+        $task ->save();
+
+        // トップページへリダイレクトさせる
+        return redirect('/');
     }
 
     /**
@@ -79,6 +114,12 @@ class TasksController extends Controller
      */
     public function destroy($id)
     {
-        //
+        // idの値でタスクを検索して取得
+        $task = Task::findOrFail($id);
+        // タスクを削除
+        $task ->delete();
+
+        // トップページへリダイレクトさせる
+        return redirect('/');
     }
 }
