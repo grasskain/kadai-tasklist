@@ -21,16 +21,19 @@ class TasksController extends Controller
             'tasks' => $tasks,
         ]);
     }
+        
+        
 
     /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
      */
+     
     public function create()
     {
         $task = new Task;
-
+   
         return view('tasks.create', [
             'task' => $task,
         ]);
@@ -43,23 +46,21 @@ class TasksController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+     
     public function store(Request $request)
     {
-        
-        $request->validate([
-            'status' => 'required|max:10', 
-            'content' => 'required',
-        ]);
-        
+        // メッセージを作成
         $task = new Task;
-        
-        $task->status = $request->status;
         $task->content = $request->content;
+        $task->status = $request->status;
+        $task->user_id = \Auth::id();
         $task->save();
 
+        // トップページへリダイレクトさせる
         return redirect('/');
-
+        
     }
+    
 
     /**
      * Display the specified resource.
@@ -70,8 +71,14 @@ class TasksController extends Controller
     public function show($id)
     {
 
+        // idの値でメッセージを検索して取得
         $task = Task::findOrFail($id);
+        
+        if (\Auth::id() !== $task->user_id) {
+            return redirect('/');
+        }
 
+        // メッセージ詳細ビューでそれを表示
         return view('tasks.show', [
             'task' => $task,
         ]);
@@ -86,9 +93,14 @@ class TasksController extends Controller
     public function edit($id)
     {
       
+        // idの値でメッセージを検索して取得
         $task = Task::findOrFail($id);
+        
+        if (\Auth::id() !== $task->user_id) {
+            return redirect('/');
+        }
 
-
+        // メッセージ編集ビューでそれを表示
         return view('tasks.edit', [
             'task' => $task,
         ]);
@@ -104,18 +116,16 @@ class TasksController extends Controller
     public function update(Request $request, $id)
     {
         
-        $request->validate([
-            'status' => 'required|max:10',
-            'content' => 'required',
-        ]);
-        
         $task = Task::findOrFail($id);
         
-        $task ->status = $request->status;
+        if (\Auth::id() !== $task->user_id) {
+            return redirect('/');
+        }
+        
         $task ->content = $request->content;
         $task ->save();
-
-
+        
+        
         return redirect('/');
     }
 
@@ -127,12 +137,21 @@ class TasksController extends Controller
      */
     public function destroy($id)
     {
+        
+        
         // idの値でタスクを検索して取得
         $task = Task::findOrFail($id);
+        
+        if (\Auth::id() !== $task->user_id) {
+            return redirect('/');
+        }
+        
         // タスクを削除
         $task ->delete();
 
         // トップページへリダイレクトさせる
         return redirect('/');
+        
     }
+    
 }
