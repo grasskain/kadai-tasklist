@@ -11,7 +11,7 @@
 |
 */
 
-    Route::resource('tasks', 'TasksController');
+    Route::get('/', 'TasksController@index');
 
     // ユーザ登録
     Route::get('signup', 'Auth\RegisterController@showRegistrationForm')->name('signup.get');
@@ -24,6 +24,5 @@
    
    
     Route::group(['middleware' => ['auth']], function () {
-    Route::get('/', 'TasksController@index');
-    Route::resource('tasks', 'TasksController', ['only' => ['create','store', 'destroy', 'show','index']]);
-});
+        Route::resource('tasks', 'TasksController');
+    });
